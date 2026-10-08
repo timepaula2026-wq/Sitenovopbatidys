@@ -1,5 +1,5 @@
 name = "sendpulse-proxy"
-main = "sendpulse-worker.js"
+main = "functions/sendpulse-worker.js"
 compatibility_date = "2024-12-13"
 compatibility_flags = ["nodejs_compat"]
 
