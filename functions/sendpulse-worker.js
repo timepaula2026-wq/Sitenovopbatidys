@@ -12,6 +12,8 @@ const corsHeaders = {
   'Content-Type': 'application/json',
 };
 
+const ADDRESSBOOK_ID = '816467';
+
 export default {
   async fetch(request, env, ctx) {
     // Handle CORS preflight
@@ -43,14 +45,6 @@ export default {
         });
       }
 
-      // Prepare SendPulse API request
-      const sendpulsePayload = {
-        email: email,
-        name: name,
-        phone: phone || '',
-        custom_fields: fields || {},
-      };
-
       // Get API key from environment variable
       const apiKey = env.SENDPULSE_API_KEY;
       if (!apiKey) {
@@ -61,21 +55,58 @@ export default {
         });
       }
 
-      // Call SendPulse API to add contact
-      const sendpulseResponse = await fetch('https://api.sendpulse.com/addressbooks/add', {
+      // Step 1: Get OAuth access token from SendPulse
+      const tokenResponse = await fetch('https://api.sendpulse.com/oauth/access_token', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify(sendpulsePayload),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          grant_type: 'client_credentials',
+          client_id: env.SENDPULSE_USER_ID || '',
+          client_secret: apiKey,
+        }),
       });
+
+      let accessToken = null;
+
+      if (tokenResponse.ok) {
+        const tokenData = await tokenResponse.json();
+        accessToken = tokenData.access_token;
+      }
+
+      // Fallback: use API key directly as Bearer token
+      const authToken = accessToken || apiKey;
+
+      // Step 2: Add email to addressbook
+      const sendpulsePayload = {
+        emails: [
+          {
+            email: email,
+            variables: {
+              Name: name,
+              Phone: phone || '',
+              ...(fields || {}),
+            },
+          },
+        ],
+      };
+
+      const sendpulseResponse = await fetch(
+        `https://api.sendpulse.com/addressbooks/${ADDRESSBOOK_ID}/emails`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken}`,
+          },
+          body: JSON.stringify(sendpulsePayload),
+        }
+      );
 
       // Check SendPulse response
       if (!sendpulseResponse.ok) {
         const errorText = await sendpulseResponse.text();
         console.error('SendPulse API error:', errorText);
-        return new Response(JSON.stringify({ error: 'Failed to save contact' }), {
+        return new Response(JSON.stringify({ error: 'Failed to save contact', detail: errorText }), {
           status: 500,
           headers: corsHeaders,
         });
@@ -89,7 +120,7 @@ export default {
 
     } catch (error) {
       console.error('Worker error:', error);
-      return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      return new Response(JSON.stringify({ error: 'Internal server error', detail: error.message }), {
         status: 500,
         headers: corsHeaders,
       });
