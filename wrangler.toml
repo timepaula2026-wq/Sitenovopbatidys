@@ -3,6 +3,8 @@ main = "functions/sendpulse-worker.js"
 compatibility_date = "2024-12-13"
 compatibility_flags = ["nodejs_compat"]
 
-# Environment variables for SendPulse API key
+[vars]
+SENDPULSE_USER_ID = "9524243"
+
 [env.production]
-vars = { ENVIRONMENT = "production" }
+vars = { ENVIRONMENT = "production", SENDPULSE_USER_ID = "9524243" }
