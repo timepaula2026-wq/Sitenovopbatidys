@@ -789,10 +789,8 @@
         // 4. Crie 2 webhooks:
         //    - "Palestras" - copie a URL gerada
         //    - "Mentorias" - copie a URL gerada
-        // 5. Cole as URLs nos campos abaixo:
-
-        const PALESTRAS_WEBHOOK_URL = 'https://seu-webhook-palestras-aqui.com';
-        const MENTORIA_WEBHOOK_URL = 'https://seu-webhook-mentoria-aqui.com';
+        // Worker Endpoint (Cloudflare Worker proxy para SendPulse)
+        const WORKER_URL = 'https://sendpulse-proxy.seu-dominio.workers.dev';
 
         // Funções Modal
         function openModal(modalId) {
@@ -854,23 +852,43 @@
         }
 
         // Envio SendPulse
-        async function sendToSendPulse(formData, webhookUrl) {
+        async function sendToSendPulse(formData) {
+            const email = formData.get('email');
+            const nome = formData.get('nome');
+            const whatsapp = formData.get('whatsapp');
+
+            // Preparar dados adicionais (todos os campos do formulário)
+            const customFields = {};
+            for (let [key, value] of formData.entries()) {
+                if (!['email', 'nome', 'whatsapp'].includes(key)) {
+                    customFields[key] = value;
+                }
+            }
+
             const payload = {
-                email: formData.get('email'),
-                name: formData.get('nome'),
-                phone: formData.get('whatsapp'),
-                fields: Object.fromEntries(formData)
+                email: email,
+                name: nome,
+                phone: whatsapp,
+                fields: customFields
             };
 
             try {
-                const response = await fetch(webhookUrl, {
+                const response = await fetch(WORKER_URL, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
                     body: JSON.stringify(payload)
                 });
-                return response.ok;
+
+                if (!response.ok) {
+                    console.error('Worker Error:', await response.text());
+                    return false;
+                }
+
+                return true;
             } catch (error) {
-                console.error('Erro:', error);
+                console.error('Erro na requisição:', error);
                 return false;
             }
         }
@@ -889,7 +907,7 @@
             btn.disabled = true;
 
             const formData = new FormData(this);
-            const success = await sendToSendPulse(formData, PALESTRAS_WEBHOOK_URL);
+            const success = await sendToSendPulse(formData);
 
             if (success) {
                 document.getElementById('palestrasMessage').textContent = '✓ Enviado com sucesso!';
@@ -918,7 +936,7 @@
             btn.disabled = true;
 
             const formData = new FormData(this);
-            const success = await sendToSendPulse(formData, MENTORIA_WEBHOOK_URL);
+            const success = await sendToSendPulse(formData);
 
             if (success) {
                 document.getElementById('mentoriaMessage').textContent = '✓ Enviado com sucesso!';
