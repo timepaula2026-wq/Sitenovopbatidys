@@ -39,7 +39,10 @@ export async function onRequest(context) {
     const userId = (env.SENDPULSE_USER_ID || '').trim();
 
     if (!apiKey || !userId) {
-      return new Response(JSON.stringify({ error: 'Server configuration error' }), {
+      return new Response(JSON.stringify({
+        error: 'Server configuration error',
+        debug: { hasApiKey: !!env.SENDPULSE_API_KEY, hasUserId: !!env.SENDPULSE_USER_ID }
+      }), {
         status: 500, headers: corsHeaders,
       });
     }
