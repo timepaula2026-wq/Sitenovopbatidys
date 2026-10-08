@@ -46,9 +46,11 @@ export default {
       }
 
       // Get API key from environment variable
-      const apiKey = env.SENDPULSE_API_KEY;
-      if (!apiKey) {
-        console.error('SENDPULSE_API_KEY not configured');
+      const apiKey = (env.SENDPULSE_API_KEY || '').trim();
+      const userId = (env.SENDPULSE_USER_ID || '').trim();
+
+      if (!apiKey || !userId) {
+        console.error('SENDPULSE credentials not configured');
         return new Response(JSON.stringify({ error: 'Server configuration error' }), {
           status: 500,
           headers: corsHeaders,
@@ -61,20 +63,22 @@ export default {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           grant_type: 'client_credentials',
-          client_id: env.SENDPULSE_USER_ID || '',
+          client_id: userId,
           client_secret: apiKey,
         }),
       });
 
-      let accessToken = null;
-
-      if (tokenResponse.ok) {
-        const tokenData = await tokenResponse.json();
-        accessToken = tokenData.access_token;
+      if (!tokenResponse.ok) {
+        const tokenError = await tokenResponse.text();
+        console.error('SendPulse OAuth error:', tokenError);
+        return new Response(JSON.stringify({ error: 'Authentication failed', detail: tokenError }), {
+          status: 500,
+          headers: corsHeaders,
+        });
       }
 
-      // Fallback: use API key directly as Bearer token
-      const authToken = accessToken || apiKey;
+      const tokenData = await tokenResponse.json();
+      const authToken = tokenData.access_token;
 
       // Step 2: Add email to addressbook
       const sendpulsePayload = {
