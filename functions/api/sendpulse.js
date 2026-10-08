@@ -35,13 +35,13 @@ export async function onRequest(context) {
       });
     }
 
-    const apiKey = (env.SENDPULSE_API_KEY || '').trim();
-    const userId = (env.SENDPULSE_USER_ID || '').trim();
+    const clientId = (env.SENDPULSE_CLIENT_ID || '').trim();
+    const clientSecret = (env.SENDPULSE_CLIENT_SECRET || '').trim();
 
-    if (!apiKey || !userId) {
+    if (!clientId || !clientSecret) {
       return new Response(JSON.stringify({
         error: 'Server configuration error',
-        debug: { hasApiKey: !!env.SENDPULSE_API_KEY, hasUserId: !!env.SENDPULSE_USER_ID }
+        debug: { hasClientId: !!env.SENDPULSE_CLIENT_ID, hasClientSecret: !!env.SENDPULSE_CLIENT_SECRET }
       }), {
         status: 500, headers: corsHeaders,
       });
@@ -53,8 +53,8 @@ export async function onRequest(context) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         grant_type: 'client_credentials',
-        client_id: userId,
-        client_secret: apiKey,
+        client_id: clientId,
+        client_secret: clientSecret,
       }),
     });
 
