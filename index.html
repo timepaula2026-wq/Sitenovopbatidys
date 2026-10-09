@@ -519,6 +519,13 @@ ul,ol{padding:0;list-style:none}
 .modal__msg.ok{background:#e8f5e9;color:#2e7d32;display:block}
 .modal__msg.erro{background:#fce4ec;color:#c62828;display:block}
 .modal__msg.carregando{background:var(--linho);color:var(--cafe-md);display:block}
+/* radio e select extras */
+.radio-grupo{display:flex;flex-wrap:wrap;gap:.45rem .8rem;margin-top:.3rem}
+.radio-opcao{display:flex;align-items:center;gap:.4rem;cursor:pointer;font-size:.9375rem;color:var(--cafe);line-height:1.3}
+.radio-opcao input[type=radio]{width:auto;accent-color:var(--ouro);flex-shrink:0;cursor:pointer}
+.campo--col2{display:grid;grid-template-columns:1fr 1fr;gap:0 1rem}
+.campo--col2 .campo{margin-bottom:1rem}
+.secao-form{font-size:.8125rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--ouro-texto);margin:1.4rem 0 .6rem;padding-top:1rem;border-top:1px solid var(--areia)}
 </style>
 </head>
 
@@ -533,9 +540,12 @@ ul,ol{padding:0;list-style:none}
   <div class="modal">
     <button class="modal__fechar" aria-label="Fechar" data-fecha>×</button>
     <p class="modal__rotulo">Mentoria</p>
-    <h2 class="modal__titulo" id="titModalMentoria">Falar com a equipe</h2>
-    <p class="modal__sub">Preencha seus dados e a equipe da Paula vai entrar em contato para entender o seu momento.</p>
+    <h2 class="modal__titulo" id="titModalMentoria">Quero conhecer as Mentorias Paula Batista</h2>
+    <p class="modal__sub">A mentoria é para quem quer sair da intenção e transformar desenvolvimento em ação e resultado. Conte um pouco sobre seu momento atual para que nossa equipe possa indicar o formato mais adequado para você.</p>
     <form id="formMentoria" novalidate>
+
+      <p class="secao-form">Dados pessoais</p>
+
       <div class="campo">
         <label for="mNome">Nome completo *</label>
         <input type="text" id="mNome" name="nome" required autocomplete="name" placeholder="Seu nome">
@@ -545,18 +555,92 @@ ul,ol{padding:0;list-style:none}
         <input type="email" id="mEmail" name="email" required autocomplete="email" placeholder="seuemail@exemplo.com">
       </div>
       <div class="campo">
-        <label for="mTel">WhatsApp</label>
-        <input type="tel" id="mTel" name="telefone" autocomplete="tel" placeholder="(00) 00000-0000">
+        <label for="mTel">WhatsApp *</label>
+        <input type="tel" id="mTel" name="telefone" required autocomplete="tel" placeholder="(00) 00000-0000">
       </div>
       <div class="campo">
-        <label for="mEmpresa">Empresa / segmento</label>
-        <input type="text" id="mEmpresa" name="empresa" placeholder="Ex: Construtora, Varejo…">
+        <label for="mCidade">Cidade / Estado</label>
+        <input type="text" id="mCidade" name="cidade" placeholder="Ex: São Paulo / SP">
+      </div>
+
+      <p class="secao-form">Sobre seu momento</p>
+
+      <div class="campo">
+        <label for="mArea">Qual área você deseja desenvolver?</label>
+        <select id="mArea" name="area">
+          <option value="">Selecione…</option>
+          <option>Desenvolvimento pessoal</option>
+          <option>Liderança</option>
+          <option>Carreira</option>
+          <option>Comunicação</option>
+          <option>Vendas</option>
+          <option>Gestão</option>
+          <option>Produtividade</option>
+          <option>Inteligência emocional</option>
+          <option>Relacionamentos profissionais</option>
+          <option>Outra</option>
+        </select>
       </div>
       <div class="campo">
-        <label for="mMensagem">Conte um pouco sobre você</label>
-        <textarea id="mMensagem" name="mensagem" placeholder="Tamanho da equipe, desafio atual…"></textarea>
+        <label for="mDesafio">Qual é o seu principal desafio atualmente?</label>
+        <textarea id="mDesafio" name="desafio" placeholder="Descreva livremente…"></textarea>
       </div>
-      <button type="submit" class="bt bt--cheio modal__enviar"><span>Enviar mensagem</span></button>
+      <div class="campo">
+        <label for="mAlcancar">O que você gostaria de alcançar com a mentoria?</label>
+        <textarea id="mAlcancar" name="alcançar" placeholder="Seus objetivos…"></textarea>
+      </div>
+
+      <div class="campo">
+        <label>Você busca uma mentoria para:</label>
+        <div class="radio-grupo">
+          <label class="radio-opcao"><input type="radio" name="para_quem" value="Mim"> Mim</label>
+          <label class="radio-opcao"><input type="radio" name="para_quem" value="Minha equipe"> Minha equipe</label>
+          <label class="radio-opcao"><input type="radio" name="para_quem" value="Minha empresa"> Minha empresa</label>
+          <label class="radio-opcao"><input type="radio" name="para_quem" value="Ainda não sei"> Ainda não sei</label>
+        </div>
+      </div>
+      <div class="campo">
+        <label>Qual formato você prefere?</label>
+        <div class="radio-grupo">
+          <label class="radio-opcao"><input type="radio" name="formato" value="Individual"> Individual</label>
+          <label class="radio-opcao"><input type="radio" name="formato" value="Grupo"> Grupo</label>
+          <label class="radio-opcao"><input type="radio" name="formato" value="Para empresa/equipe"> Para empresa/equipe</label>
+          <label class="radio-opcao"><input type="radio" name="formato" value="Ainda não sei"> Ainda não sei</label>
+        </div>
+      </div>
+      <div class="campo">
+        <label>Qual formato de atendimento você prefere?</label>
+        <div class="radio-grupo">
+          <label class="radio-opcao"><input type="radio" name="atendimento" value="Online"> Online</label>
+          <label class="radio-opcao"><input type="radio" name="atendimento" value="Presencial"> Presencial</label>
+          <label class="radio-opcao"><input type="radio" name="atendimento" value="Tanto faz"> Tanto faz</label>
+        </div>
+      </div>
+      <div class="campo">
+        <label>Qual sua disponibilidade para participar das mentorias?</label>
+        <div class="radio-grupo">
+          <label class="radio-opcao"><input type="radio" name="disponibilidade" value="Durante a manhã"> Durante a manhã</label>
+          <label class="radio-opcao"><input type="radio" name="disponibilidade" value="Durante a tarde"> Durante a tarde</label>
+          <label class="radio-opcao"><input type="radio" name="disponibilidade" value="À noite"> À noite</label>
+          <label class="radio-opcao"><input type="radio" name="disponibilidade" value="Flexível"> Flexível</label>
+        </div>
+      </div>
+      <div class="campo">
+        <label>Qual é a sua faixa de investimento prevista?</label>
+        <div class="radio-grupo">
+          <label class="radio-opcao"><input type="radio" name="investimento_m" value="Até R$ 500"> Até R$ 500</label>
+          <label class="radio-opcao"><input type="radio" name="investimento_m" value="R$ 501 a R$ 1.000"> R$ 501 a R$ 1.000</label>
+          <label class="radio-opcao"><input type="radio" name="investimento_m" value="R$ 1.001 a R$ 2.000"> R$ 1.001 a R$ 2.000</label>
+          <label class="radio-opcao"><input type="radio" name="investimento_m" value="Acima de R$ 2.000"> Acima de R$ 2.000</label>
+          <label class="radio-opcao"><input type="radio" name="investimento_m" value="Ainda não definido"> Ainda não definido</label>
+        </div>
+      </div>
+      <div class="campo">
+        <label for="mMotivo">O que fez você buscar uma mentoria neste momento?</label>
+        <textarea id="mMotivo" name="motivo" placeholder="Conte um pouco mais…"></textarea>
+      </div>
+
+      <button type="submit" class="bt bt--cheio modal__enviar"><span>Quero receber informações</span></button>
       <div class="modal__msg" id="msgMentoria"></div>
     </form>
   </div>
@@ -569,34 +653,114 @@ ul,ol{padding:0;list-style:none}
   <div class="modal">
     <button class="modal__fechar" aria-label="Fechar" data-fecha>×</button>
     <p class="modal__rotulo">Palestras</p>
-    <h2 class="modal__titulo" id="titModalPalestra">Convidar a Paula para o seu evento</h2>
-    <p class="modal__sub">Compartilhe os detalhes do evento e nossa equipe vai retornar em breve.</p>
+    <h2 class="modal__titulo" id="titModalPalestra">Solicite um orçamento de palestra</h2>
+    <p class="modal__sub">Quer levar uma experiência de desenvolvimento, inspiração e transformação para sua equipe ou evento? Preencha o formulário e nossa equipe preparará uma proposta personalizada.</p>
     <form id="formPalestra" novalidate>
+
+      <p class="secao-form">Dados de contato</p>
+
       <div class="campo">
-        <label for="pNome">Seu nome *</label>
-        <input type="text" id="pNome" name="nome" required autocomplete="name" placeholder="Nome completo">
+        <label for="pNome">Nome completo *</label>
+        <input type="text" id="pNome" name="nome" required autocomplete="name" placeholder="Seu nome">
+      </div>
+      <div class="campo">
+        <label for="pEmpresa">Empresa / Organização *</label>
+        <input type="text" id="pEmpresa" name="empresa" required placeholder="Nome da empresa ou organização">
+      </div>
+      <div class="campo">
+        <label for="pCargo">Cargo *</label>
+        <input type="text" id="pCargo" name="cargo" required placeholder="Seu cargo">
       </div>
       <div class="campo">
         <label for="pEmail">E-mail *</label>
         <input type="email" id="pEmail" name="email" required autocomplete="email" placeholder="seuemail@exemplo.com">
       </div>
       <div class="campo">
-        <label for="pTel">WhatsApp</label>
-        <input type="tel" id="pTel" name="telefone" autocomplete="tel" placeholder="(00) 00000-0000">
+        <label for="pTel">WhatsApp *</label>
+        <input type="tel" id="pTel" name="telefone" required autocomplete="tel" placeholder="(00) 00000-0000">
       </div>
       <div class="campo">
-        <label for="pEvento">Nome do evento / empresa</label>
+        <label for="pCidade">Cidade / Estado *</label>
+        <input type="text" id="pCidade" name="cidade" required placeholder="Ex: Curitiba / PR">
+      </div>
+
+      <p class="secao-form">Sobre o evento</p>
+
+      <div class="campo">
+        <label for="pEvento">Nome do evento</label>
         <input type="text" id="pEvento" name="evento" placeholder="Ex: Convenção de Vendas 2027">
       </div>
       <div class="campo">
-        <label for="pData">Data prevista</label>
-        <input type="text" id="pData" name="data" placeholder="Mês e ano aproximados">
+        <label for="pData">Data prevista para o evento *</label>
+        <input type="date" id="pData" name="data" required>
       </div>
       <div class="campo">
-        <label for="pMensagem">Detalhes do evento</label>
-        <textarea id="pMensagem" name="mensagem" placeholder="Tema, público, cidade, número de participantes…"></textarea>
+        <label>O evento será:</label>
+        <div class="radio-grupo">
+          <label class="radio-opcao"><input type="radio" name="modalidade_evento" value="Presencial"> Presencial</label>
+          <label class="radio-opcao"><input type="radio" name="modalidade_evento" value="Online"> Online</label>
+          <label class="radio-opcao"><input type="radio" name="modalidade_evento" value="Híbrido"> Híbrido</label>
+          <label class="radio-opcao"><input type="radio" name="modalidade_evento" value="Ainda não definido"> Ainda não definido</label>
+        </div>
       </div>
-      <button type="submit" class="bt bt--cheio modal__enviar"><span>Enviar convite</span></button>
+      <div class="campo">
+        <label>Quantidade aproximada de participantes:</label>
+        <div class="radio-grupo">
+          <label class="radio-opcao"><input type="radio" name="participantes" value="Até 30"> Até 30</label>
+          <label class="radio-opcao"><input type="radio" name="participantes" value="31 a 50"> 31 a 50</label>
+          <label class="radio-opcao"><input type="radio" name="participantes" value="51 a 100"> 51 a 100</label>
+          <label class="radio-opcao"><input type="radio" name="participantes" value="101 a 300"> 101 a 300</label>
+          <label class="radio-opcao"><input type="radio" name="participantes" value="301 a 500"> 301 a 500</label>
+          <label class="radio-opcao"><input type="radio" name="participantes" value="Mais de 500"> Mais de 500</label>
+        </div>
+      </div>
+      <div class="campo">
+        <label for="pPublico">Qual é o perfil do público?</label>
+        <textarea id="pPublico" name="publico" placeholder="Ex: gestores de médias empresas, equipe comercial…"></textarea>
+      </div>
+      <div class="campo">
+        <label>Qual é o objetivo principal da palestra?</label>
+        <select name="objetivo">
+          <option value="">Selecione…</option>
+          <option>Desenvolvimento de pessoas</option>
+          <option>Liderança</option>
+          <option>Comunicação</option>
+          <option>Motivação</option>
+          <option>Vendas</option>
+          <option>Inteligência emocional</option>
+          <option>Alta performance</option>
+          <option>Trabalho em equipe</option>
+          <option>Cultura organizacional</option>
+          <option>Outro</option>
+        </select>
+      </div>
+      <div class="campo">
+        <label>Você já possui um tema definido?</label>
+        <div class="radio-grupo">
+          <label class="radio-opcao"><input type="radio" name="tema_definido" value="Sim"> Sim</label>
+          <label class="radio-opcao"><input type="radio" name="tema_definido" value="Não"> Não</label>
+        </div>
+      </div>
+      <div class="campo">
+        <label for="pTema">Se sim, qual tema?</label>
+        <input type="text" id="pTema" name="tema" placeholder="Ex: Alta Performance em Vendas">
+      </div>
+      <div class="campo">
+        <label>Existe uma faixa de investimento prevista para a palestra?</label>
+        <div class="radio-grupo">
+          <label class="radio-opcao"><input type="radio" name="investimento_p" value="Até R$ 2.000"> Até R$ 2.000</label>
+          <label class="radio-opcao"><input type="radio" name="investimento_p" value="R$ 2.001 a R$ 5.000"> R$ 2.001 a R$ 5.000</label>
+          <label class="radio-opcao"><input type="radio" name="investimento_p" value="R$ 5.001 a R$ 10.000"> R$ 5.001 a R$ 10.000</label>
+          <label class="radio-opcao"><input type="radio" name="investimento_p" value="Acima de R$ 10.000"> Acima de R$ 10.000</label>
+          <label class="radio-opcao"><input type="radio" name="investimento_p" value="Ainda não definido"> Ainda não definido</label>
+        </div>
+      </div>
+      <div class="campo">
+        <label for="pDetalhes">Conte um pouco mais sobre o evento e o que você espera da palestra.</label>
+        <textarea id="pDetalhes" name="detalhes" placeholder="Contexto do evento, expectativas, diferenciais importantes…"></textarea>
+      </div>
+
+      <button type="submit" class="bt bt--cheio modal__enviar"><span>Solicitar orçamento</span></button>
       <div class="modal__msg" id="msgPalestra"></div>
     </form>
   </div>
@@ -875,6 +1039,16 @@ ul,ol{padding:0;list-style:none}
     }
   });
 
+  /* helpers para coletar campos */
+  function val(form, name) {
+    var el = form.querySelector('[name="' + name + '"]');
+    return el ? el.value.trim() : '';
+  }
+  function radio(form, name) {
+    var checked = form.querySelector('[name="' + name + '"]:checked');
+    return checked ? checked.value : '';
+  }
+
   /* envio de formulário */
   function enviaForm(formId, msgId, formType) {
     var form = document.getElementById(formId);
@@ -883,10 +1057,9 @@ ul,ol{padding:0;list-style:none}
 
     form.addEventListener('submit', function(e){
       e.preventDefault();
-      var nome = form.querySelector('[name="nome"]').value.trim();
-      var email = form.querySelector('[name="email"]').value.trim();
-      var tel = (form.querySelector('[name="telefone"]') || {}).value || '';
-      var mensagem = (form.querySelector('[name="mensagem"]') || {}).value || '';
+      var nome = val(form, 'nome');
+      var email = val(form, 'email');
+      var tel = val(form, 'telefone');
 
       if (!nome || !email) {
         msgEl.className = 'modal__msg erro';
@@ -894,15 +1067,38 @@ ul,ol{padding:0;list-style:none}
         return;
       }
 
-      /* campos extras dinâmicos */
+      /* monta campos extras conforme tipo de formulário */
       var fields = {};
-      if (mensagem) fields['Mensagem'] = mensagem;
-      var empresa = form.querySelector('[name="empresa"]');
-      if (empresa && empresa.value) fields['Empresa'] = empresa.value;
-      var evento = form.querySelector('[name="evento"]');
-      if (evento && evento.value) fields['Evento'] = evento.value;
-      var data = form.querySelector('[name="data"]');
-      if (data && data.value) fields['Data do evento'] = data.value;
+      if (formType === 'Mentoria') {
+        var cidade = val(form, 'cidade'); if (cidade) fields['Cidade/Estado'] = cidade;
+        var area = val(form, 'area'); if (area) fields['Área de desenvolvimento'] = area;
+        var desafio = val(form, 'desafio'); if (desafio) fields['Principal desafio'] = desafio;
+        var alcancar = val(form, 'alcançar'); if (alcancar) fields['Objetivo com a mentoria'] = alcancar;
+        var para_quem = radio(form, 'para_quem'); if (para_quem) fields['Mentoria para'] = para_quem;
+        var formato = radio(form, 'formato'); if (formato) fields['Formato preferido'] = formato;
+        var atendimento = radio(form, 'atendimento'); if (atendimento) fields['Formato de atendimento'] = atendimento;
+        var disponibilidade = radio(form, 'disponibilidade'); if (disponibilidade) fields['Disponibilidade'] = disponibilidade;
+        var invest = radio(form, 'investimento_m'); if (invest) fields['Faixa de investimento'] = invest;
+        var motivo = val(form, 'motivo'); if (motivo) fields['Por que busca mentoria agora'] = motivo;
+      } else {
+        var empresa = val(form, 'empresa'); if (empresa) fields['Empresa'] = empresa;
+        var cargo = val(form, 'cargo'); if (cargo) fields['Cargo'] = cargo;
+        var cidade2 = val(form, 'cidade'); if (cidade2) fields['Cidade/Estado'] = cidade2;
+        var evento = val(form, 'evento'); if (evento) fields['Nome do evento'] = evento;
+        var data = val(form, 'data'); if (data) fields['Data do evento'] = data;
+        var modalidade = radio(form, 'modalidade_evento'); if (modalidade) fields['Modalidade do evento'] = modalidade;
+        var partic = radio(form, 'participantes'); if (partic) fields['Quantidade de participantes'] = partic;
+        var publico = val(form, 'publico'); if (publico) fields['Perfil do público'] = publico;
+        var objetivo = val(form, 'objetivo'); if (objetivo) fields['Objetivo da palestra'] = objetivo;
+        var temaDef = radio(form, 'tema_definido'); if (temaDef) fields['Tema definido'] = temaDef;
+        var tema = val(form, 'tema'); if (tema) fields['Tema da palestra'] = tema;
+        var investP = radio(form, 'investimento_p'); if (investP) fields['Faixa de investimento'] = investP;
+        var detalhes = val(form, 'detalhes'); if (detalhes) fields['Detalhes do evento'] = detalhes;
+      }
+
+      /* tags para o CRM */
+      var tagLead = formType === 'Mentoria' ? 'LEAD_MENTORIA' : 'LEAD_PALESTRA';
+      var tags = [tagLead, 'ORIGEM_INSTAGRAM', 'PAULA_BATISTA'];
 
       msgEl.className = 'modal__msg carregando';
       msgEl.textContent = 'Enviando…';
@@ -918,17 +1114,21 @@ ul,ol{padding:0;list-style:none}
           email: email,
           phone: tel,
           fields: fields,
-          formType: formType
+          formType: formType,
+          tags: tags
         })
       })
       .then(function(r){ return r.json(); })
-      .then(function(data){
-        if (data.success) {
+      .then(function(resp){
+        if (resp.success) {
+          var okMsg = formType === 'Mentoria'
+            ? 'Recebemos suas informações! 🧠 Nossa equipe vai analisar seu perfil e entrar em contato pelo WhatsApp ou e-mail informado.'
+            : 'Recebemos sua solicitação! 🎤 Nossa equipe analisará as informações e entrará em contato pelo WhatsApp ou e-mail informado.';
           msgEl.className = 'modal__msg ok';
-          msgEl.textContent = 'Recebido! A equipe vai entrar em contato em breve.';
+          msgEl.textContent = okMsg;
           form.reset();
         } else {
-          throw new Error(data.error || 'Erro desconhecido');
+          throw new Error(resp.error || 'Erro desconhecido');
         }
       })
       .catch(function(err){

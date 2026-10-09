@@ -28,7 +28,7 @@ export async function onRequest(context) {
 
   try {
     const payload = await request.json();
-    const { email, name, phone, fields, formType } = payload;
+    const { email, name, phone, fields, formType, tags } = payload;
 
     if (!email || !name) {
       return new Response(JSON.stringify({ error: 'Email and name are required' }), {
@@ -61,7 +61,7 @@ export async function onRequest(context) {
             'Authorization': `Bearer ${access_token}`,
           },
           body: JSON.stringify({
-            emails: [{ email, variables: { Name: name, Phone: phone || '', ...(fields || {}) } }],
+            emails: [{ email, variables: { Name: name, Phone: phone || '', ...(fields || {}) }, tags: tags || [] }],
           }),
         });
       }
