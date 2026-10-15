@@ -439,6 +439,68 @@
     /* ── FOOTER MODAL ── */
     .modal-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
 
+    /* ── COMPOSE EMAIL ── */
+    .btn-email {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--azul);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 9px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      margin-top: 4px;
+      transition: opacity .15s;
+    }
+    .btn-email:hover { opacity: .82; }
+    .email-compose {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      margin-top: 12px;
+    }
+    .email-compose-hdr {
+      font-size: 11px;
+      color: var(--fg3);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-bottom: 10px;
+    }
+    .email-subject {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--fg);
+      padding: 8px 12px;
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      margin-bottom: 8px;
+    }
+    .email-subject:focus { border-color: var(--ouro); }
+    .email-body {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--fg);
+      padding: 10px 12px;
+      font-size: 13px;
+      font-family: inherit;
+      resize: vertical;
+      min-height: 100px;
+      outline: none;
+      margin-bottom: 10px;
+    }
+    .email-body:focus { border-color: var(--ouro); }
+    .email-body::placeholder, .email-subject::placeholder { color: var(--fg3); }
+
     @media (max-width: 640px) {
       main { padding: 16px; }
       .stats-row { grid-template-columns: 1fr 1fr; }
@@ -806,8 +868,20 @@ function abrirModal(lead) {
     <div class="modal-actions">
       <button class="btn-salvar" id="btn-salvar-status">Salvar status</button>
       ${wapBtn}
+      ${lead.email ? `<button class="btn-email" id="btn-email-toggle">✉ E-mail</button>` : ''}
     </div>
     <p class="msg-salvo" id="msg-salvo"></p>
+
+    ${lead.email ? `
+    <div class="email-compose" id="email-compose" style="display:none">
+      <p class="email-compose-hdr">✉ Enviar e-mail para ${esc(lead.email)}</p>
+      <input class="email-subject" id="email-subject" type="text" placeholder="Assunto" value="Olá, ${esc(lead.nome||'')}!">
+      <textarea class="email-body" id="email-body" placeholder="Escreva sua mensagem aqui…"></textarea>
+      <div class="modal-actions" style="margin-top:0">
+        <button class="btn-salvar" id="btn-enviar-email">Enviar</button>
+        <p class="msg-salvo" id="msg-email" style="margin:0"></p>
+      </div>
+    </div>` : ''}
   `;
 
   // toggle edição
@@ -842,6 +916,18 @@ function abrirModal(lead) {
 
   // save status
   document.getElementById('btn-salvar-status').addEventListener('click', salvarStatus);
+
+  // toggle compose e-mail
+  const btnEmailToggle = document.getElementById('btn-email-toggle');
+  const emailCompose = document.getElementById('email-compose');
+  if (btnEmailToggle && emailCompose) {
+    btnEmailToggle.addEventListener('click', () => {
+      const aberto = emailCompose.style.display !== 'none';
+      emailCompose.style.display = aberto ? 'none' : '';
+      btnEmailToggle.textContent = aberto ? '✉ E-mail' : '✕ Fechar';
+    });
+    document.getElementById('btn-enviar-email').addEventListener('click', enviarEmail);
+  }
 
   overlay.classList.add('aberto');
 }
@@ -929,6 +1015,58 @@ async function salvarDados() {
   }
   btn.disabled = false;
   btn.textContent = 'Salvar dados';
+}
+
+async function enviarEmail() {
+  const subject  = document.getElementById('email-subject').value.trim();
+  const mensagem = document.getElementById('email-body').value.trim();
+  const btn = document.getElementById('btn-enviar-email');
+  const msg = document.getElementById('msg-email');
+
+  if (!subject || !mensagem) {
+    msg.textContent = 'Preencha assunto e mensagem.';
+    msg.style.color = 'var(--vermelho)';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Enviando…';
+  msg.textContent = '';
+
+  try {
+    const r = await fetch(API + '?action=send-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Password': senha },
+      body: JSON.stringify({ id: leadAtual.id, subject, mensagem })
+    });
+    const d = await r.json();
+    if (d.ok) {
+      msg.textContent = 'E-mail enviado!';
+      msg.style.color = 'var(--verde)';
+      document.getElementById('email-body').value = '';
+      // atualiza observação local
+      const idx = todosLeads.findIndex(l => l.id === leadAtual.id);
+      if (idx !== -1) {
+        const dataBR = new Date().toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+        const horaBR = new Date().toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit', timeZone:'America/Sao_Paulo' });
+        const logLine = `[E-mail enviado em ${dataBR} às ${horaBR}]\nAssunto: ${subject}`;
+        const obsAtual = todosLeads[idx].observacao || '';
+        todosLeads[idx].observacao = obsAtual ? `${obsAtual}\n\n${logLine}` : logLine;
+        leadAtual = todosLeads[idx];
+        // atualiza textarea de obs
+        const obsEl = document.getElementById('obs-input');
+        if (obsEl) obsEl.value = leadAtual.observacao;
+      }
+    } else {
+      msg.textContent = d.error || 'Erro ao enviar.';
+      msg.style.color = 'var(--vermelho)';
+    }
+  } catch(e) {
+    msg.textContent = 'Erro de conexão.';
+    msg.style.color = 'var(--vermelho)';
+  }
+  btn.disabled = false;
+  btn.textContent = 'Enviar';
 }
 
 function buildWhatsApp(telefone, nome, tipo) {
