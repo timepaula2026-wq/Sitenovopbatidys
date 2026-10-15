@@ -386,6 +386,59 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    /* ── EDITAR LEAD ── */
+    .edit-input {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--fg);
+      padding: 8px 12px;
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      margin-bottom: 8px;
+    }
+    .edit-input:focus { border-color: var(--ouro); }
+    .edit-label { font-size: 11px; color: var(--fg3); text-transform: uppercase; letter-spacing:.05em; margin-bottom: 3px; display: block; }
+    .btn-editar-toggle {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--fg3);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all .15s;
+    }
+    .btn-editar-toggle:hover, .btn-editar-toggle.ativo { border-color: var(--ouro); color: var(--ouro); }
+    .modal-section-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .modal-section-hdr p { font-size: 12px; color: var(--fg3); }
+
+    /* ── WHATSAPP ── */
+    .btn-whatsapp {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #25D366;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 9px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      text-decoration: none;
+      margin-top: 4px;
+    }
+    .btn-whatsapp:hover { background: #1EBE5B; }
+
+    /* ── FOOTER MODAL ── */
+    .modal-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+
     @media (max-width: 640px) {
       main { padding: 16px; }
       .stats-row { grid-template-columns: 1fr 1fr; }
@@ -704,11 +757,40 @@ function abrirModal(lead) {
         `<dt>${esc(k)}</dt><dd>${esc(String(v))}</dd>`).join('')}</dl>`
     : '<p style="color:var(--fg3);font-size:12px">Sem campos extras.</p>';
 
+  const wapUrl = buildWhatsApp(lead.telefone, lead.nome, lead.tipo);
+  const wapBtn = wapUrl
+    ? `<a class="btn-whatsapp" href="${wapUrl}" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.138.564 4.144 1.548 5.879L0 24l6.309-1.524A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.79 9.79 0 0 1-5.012-1.374l-.36-.213-3.732.902.944-3.618-.235-.373A9.778 9.778 0 0 1 2.182 12c0-5.422 4.396-9.818 9.818-9.818 5.422 0 9.818 4.396 9.818 9.818 0 5.422-4.396 9.818-9.818 9.818z"/></svg>
+        WhatsApp
+      </a>`
+    : '';
+
   document.getElementById('modal-body').innerHTML = `
-    <div class="detail-row"><span class="detail-label">E-mail</span><span class="detail-val">${esc(lead.email||'—')}</span></div>
-    <div class="detail-row"><span class="detail-label">Telefone</span><span class="detail-val">${esc(lead.telefone||'—')}</span></div>
-    <div class="detail-row"><span class="detail-label">Fonte</span><span class="detail-val">${TIPO_LABEL[lead.tipo]||lead.tipo||'—'}</span></div>
-    <div class="detail-row"><span class="detail-label">Data</span><span class="detail-val">${fmtData(lead.created_at)}</span></div>
+    <div class="modal-section-hdr">
+      <p>CONTATO</p>
+      <button class="btn-editar-toggle" id="btn-editar-toggle">✏ Editar</button>
+    </div>
+
+    <div id="info-view">
+      <div class="detail-row"><span class="detail-label">E-mail</span><span class="detail-val">${esc(lead.email||'—')}</span></div>
+      <div class="detail-row"><span class="detail-label">Telefone</span><span class="detail-val">${esc(lead.telefone||'—')}</span></div>
+      <div class="detail-row"><span class="detail-label">Fonte</span><span class="detail-val">${TIPO_LABEL[lead.tipo]||lead.tipo||'—'}</span></div>
+      <div class="detail-row"><span class="detail-label">Data</span><span class="detail-val">${fmtData(lead.created_at)}</span></div>
+    </div>
+
+    <div id="info-edit" style="display:none">
+      <label class="edit-label">Nome</label>
+      <input class="edit-input" id="edit-nome" type="text" value="${esc(lead.nome||'')}">
+      <label class="edit-label">E-mail</label>
+      <input class="edit-input" id="edit-email" type="email" value="${esc(lead.email||'')}">
+      <label class="edit-label">Telefone</label>
+      <input class="edit-input" id="edit-telefone" type="tel" value="${esc(lead.telefone||'')}">
+      <div class="modal-actions">
+        <button class="btn-salvar" id="btn-salvar-dados" style="margin-top:0">Salvar dados</button>
+        <p class="msg-salvo" id="msg-salvo-dados" style="margin:0"></p>
+      </div>
+    </div>
+
     <div class="detail-sep"></div>
     <p style="font-size:12px;color:var(--fg3);margin-bottom:8px">INFORMAÇÕES DO FORMULÁRIO</p>
     ${camposHtml}
@@ -721,10 +803,34 @@ function abrirModal(lead) {
       <button class="btn-status${lead.status==='descartado'?' ativo':''}" data-s="descartado">Descartado</button>
     </div>
     <textarea class="obs-input" id="obs-input" placeholder="Observações internas…">${esc(lead.observacao||'')}</textarea>
-    <br>
-    <button class="btn-salvar" id="btn-salvar-status">Salvar</button>
+    <div class="modal-actions">
+      <button class="btn-salvar" id="btn-salvar-status">Salvar status</button>
+      ${wapBtn}
+    </div>
     <p class="msg-salvo" id="msg-salvo"></p>
   `;
+
+  // toggle edição
+  const btnEdit = document.getElementById('btn-editar-toggle');
+  const infoView = document.getElementById('info-view');
+  const infoEdit = document.getElementById('info-edit');
+  btnEdit.addEventListener('click', () => {
+    const editando = infoEdit.style.display !== 'none';
+    if (editando) {
+      infoEdit.style.display = 'none';
+      infoView.style.display = '';
+      btnEdit.classList.remove('ativo');
+      btnEdit.textContent = '✏ Editar';
+    } else {
+      infoEdit.style.display = '';
+      infoView.style.display = 'none';
+      btnEdit.classList.add('ativo');
+      btnEdit.textContent = '✕ Cancelar';
+    }
+  });
+
+  // salvar dados do lead
+  document.getElementById('btn-salvar-dados').addEventListener('click', salvarDados);
 
   // status buttons
   modal.querySelectorAll('.btn-status').forEach(btn => {
@@ -734,7 +840,7 @@ function abrirModal(lead) {
     });
   });
 
-  // save
+  // save status
   document.getElementById('btn-salvar-status').addEventListener('click', salvarStatus);
 
   overlay.classList.add('aberto');
@@ -775,6 +881,68 @@ async function salvarStatus() {
   }
   btn.disabled = false;
   btn.textContent = 'Salvar';
+}
+
+async function salvarDados() {
+  const nome     = document.getElementById('edit-nome').value.trim();
+  const email    = document.getElementById('edit-email').value.trim();
+  const telefone = document.getElementById('edit-telefone').value.trim();
+  const btn = document.getElementById('btn-salvar-dados');
+  const msg = document.getElementById('msg-salvo-dados');
+
+  btn.disabled = true;
+  btn.textContent = 'Salvando…';
+  msg.textContent = '';
+
+  try {
+    const r = await fetch(API + '?action=update-lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Password': senha },
+      body: JSON.stringify({ id: leadAtual.id, nome, email, telefone })
+    });
+    const d = await r.json();
+    if (d.ok) {
+      msg.textContent = 'Dados salvos!';
+      msg.style.color = 'var(--verde)';
+      // atualiza localmente
+      const idx = todosLeads.findIndex(l => l.id === leadAtual.id);
+      if (idx !== -1) {
+        todosLeads[idx].nome = nome;
+        todosLeads[idx].email = email;
+        todosLeads[idx].telefone = telefone;
+        leadAtual = todosLeads[idx];
+      }
+      document.getElementById('modal-nome').textContent = nome || '—';
+      renderTabela();
+      // fecha modo edição após salvar
+      setTimeout(() => {
+        document.getElementById('btn-editar-toggle').click();
+        msg.textContent = '';
+      }, 1200);
+    } else {
+      msg.textContent = 'Erro ao salvar.';
+      msg.style.color = 'var(--vermelho)';
+    }
+  } catch(e) {
+    msg.textContent = 'Erro de conexão.';
+    msg.style.color = 'var(--vermelho)';
+  }
+  btn.disabled = false;
+  btn.textContent = 'Salvar dados';
+}
+
+function buildWhatsApp(telefone, nome, tipo) {
+  const digits = (telefone || '').replace(/\D/g, '');
+  if (!digits) return '';
+  const n = nome || 'você';
+  const msgs = {
+    consorcio:   `Olá, ${n}! 👋 Vi que você simulou um consórcio com a Paula Batista. Posso te ajudar a dar o próximo passo?`,
+    mentoria:    `Olá, ${n}! 👋 Vi que você se inscreveu para a mentoria da Paula Batista. Vamos conversar?`,
+    palestra:    `Olá, ${n}! 👋 Vi que você se inscreveu para a palestra da Paula Batista. Posso confirmar sua presença?`,
+    lista_espera:`Olá, ${n}! 👋 Vi que você entrou na lista de espera da Paula Batista. Tenho uma novidade para você!`,
+  };
+  const msg = msgs[tipo] || `Olá, ${n}! 👋 Vi seu interesse no trabalho da Paula Batista. Posso te ajudar?`;
+  return `https://wa.me/55${digits}?text=${encodeURIComponent(msg)}`;
 }
 
 function fecharModal() { overlay.classList.remove('aberto'); leadAtual = null; }
