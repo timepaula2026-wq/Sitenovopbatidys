@@ -100,6 +100,22 @@ export async function onRequest(context) {
       });
     }
 
+    // === 3. Supabase pb_leads (mentoria / palestra) ===
+    const tipoLead = formType === 'Mentoria' ? 'mentoria' : 'palestra';
+    try {
+      await fetch('https://fhfphlqrgtabkiqoywea.supabase.co/functions/v1/pb-lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tipo: tipoLead,
+          nome: name,
+          email: email,
+          telefone: phone || null,
+          campos: fields || {},
+        }),
+      });
+    } catch (_) { /* não bloqueia — falha silenciosa */ }
+
     return new Response(JSON.stringify({ success: true, message: 'Contact added successfully' }), {
       status: 200, headers: corsHeaders,
     });
