@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Métricas — Paula Batista</title>
+  <style>
+    :root{--bg:#0f0b08;--panel:#1b140e;--line:#3a2b1c;--fg:#f3ede4;--fg3:#9a8b78;--ouro:#c9a255;--verde:#4ade80;--vermelho:#f87171;}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;padding:0 max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px))}
+    header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:16px 0;border-bottom:1px solid var(--line);margin-bottom:20px}
+    header h1{font-size:18px;margin:0}
+    nav a{color:var(--fg3);text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:6px 12px;font-size:13px}
+    nav a[aria-current]{color:var(--ouro);border-color:var(--ouro)}
+    .row{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end}
+    label.l{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--fg3);margin-bottom:4px}
+    input{background:#120d09;border:1px solid var(--line);color:var(--fg);border-radius:8px;padding:8px 10px;font:inherit;min-width:0}
+    input[type=date]{width:160px}
+    input[type=number]{width:100%}
+    button{background:var(--ouro);color:#1a1208;border:0;border-radius:8px;padding:9px 14px;font-weight:600;cursor:pointer}
+    button.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}
+    button:disabled{opacity:.5}
+    .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:20px 0}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;min-width:0}
+    .card .v{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:4px}
+    .card .d{font-size:12px;color:var(--fg3);margin-top:2px}
+    .up{color:var(--verde)} .down{color:var(--vermelho)}
+    .blocos{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:20px}
+    .bloco{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
+    .bloco h2{font-size:13px;margin:0 0 10px;color:var(--ouro);text-transform:uppercase;letter-spacing:.06em}
+    .campo{margin-bottom:8px}
+    .auto{font-size:12px;color:var(--fg3)}
+    .tabela{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+    table{border-collapse:collapse;width:100%;min-width:760px;font-variant-numeric:tabular-nums}
+    th,td{padding:9px 10px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+    th:first-child,td:first-child{text-align:left}
+    th{font-size:11px;color:var(--fg3);text-transform:uppercase;letter-spacing:.04em;font-weight:600}
+    tbody tr{cursor:pointer} tbody tr:hover,tbody tr.on{background:#2a1f14}
+    tbody tr:last-child td{border-bottom:0}
+    .msg{font-size:13px;color:var(--fg3);margin-left:6px}
+    .vazio{color:var(--fg3);padding:14px}
+  </style>
+</head>
+<body>
+<header>
+  <div class="row" style="align-items:center;gap:16px">
+    <h1>Métricas semanais</h1>
+    <nav class="row" style="gap:6px">
+      <a href="admin.html">CRM</a>
+      <a href="metricas.html" aria-current="page">Métricas</a>
+    </nav>
+  </div>
+  <div class="row">
+    <div>
+      <label class="l" for="semana">Segunda-feira</label>
+      <input type="date" id="semana">
+    </div>
+    <button class="ghost" id="btn-hoje">Semana atual</button>
+    <button id="btn-salvar">Salvar semana</button>
+    <span class="msg" id="msg" role="status"></span>
+  </div>
+</header>
+
+<section class="cards" id="cards"></section>
+
+<section class="blocos">
+  <div class="bloco"><h2>LinkedIn</h2>
+    <div class="campo"><label class="l" for="f_linkedin_impressoes">Impressões (7 dias)</label><input type="number" min="0" id="f_linkedin_impressoes"></div>
+    <div class="campo"><label class="l" for="f_linkedin_posts">Posts publicados</label><input type="number" min="0" id="f_linkedin_posts"></div>
+    <div class="campo"><label class="l" for="f_linkedin_seguidores">Seguidores totais</label><input type="number" min="0" id="f_linkedin_seguidores"></div>
+  </div>
+  <div class="bloco"><h2>YouTube</h2>
+    <div class="campo"><label class="l" for="f_youtube_views">Views</label><input type="number" min="0" id="f_youtube_views"></div>
+    <div class="campo"><label class="l" for="f_youtube_inscritos">Inscritos totais</label><input type="number" min="0" id="f_youtube_inscritos"></div>
+    <div class="campo"><label class="l" for="f_youtube_inscritos_novos">Inscritos novos</label><input type="number" min="0" id="f_youtube_inscritos_novos"></div>
+    <div class="campo"><label class="l" for="f_youtube_horas">Horas de exibição</label><input type="number" min="0" step="0.1" id="f_youtube_horas"></div>
+  </div>
+  <div class="bloco"><h2>ManyChat</h2>
+    <div class="campo"><label class="l" for="f_manychat_envios">Envios (automação novo seguidor)</label><input type="number" min="0" id="f_manychat_envios"></div>
+    <div class="campo"><label class="l" for="f_manychat_cliques">Cliques</label><input type="number" min="0" id="f_manychat_cliques"></div>
+    <div class="campo"><label class="l" for="f_manychat_novos_seguidores">Novos seguidores na semana</label><input type="number" min="0" id="f_manychat_novos_seguidores"></div>
+  </div>
+  <div class="bloco"><h2>Vendas Eduzz (ebook)</h2>
+    <div class="campo"><label class="l" for="f_eduzz_vendas">Vendas na semana</label><input type="number" min="0" id="f_eduzz_vendas"></div>
+    <div class="campo"><label class="l" for="f_eduzz_receita">Receita (R$)</label><input type="number" min="0" step="0.01" id="f_eduzz_receita"></div>
+    <p class="auto">CRM (automático, vem do painel de leads): <span id="crm-auto">—</span></p>
+  </div>
+</section>
+
+<section>
+  <div class="tabela"><table>
+    <thead><tr>
+      <th>Semana</th><th>LI impr.</th><th>LI posts</th><th>LI seg.</th>
+      <th>YT views</th><th>YT inscr.</th><th>YT novos</th><th>YT horas</th>
+      <th>MC envios</th><th>MC cliques</th><th>MC novos</th>
+      <th>Eduzz vendas</th><th>Eduzz R$</th><th>Leads CRM</th><th>Convertidos</th>
+    </tr></thead>
+    <tbody id="rows"></tbody>
+  </table></div>
+  <p class="vazio" id="vazio" hidden>Nenhuma semana registrada ainda.</p>
+</section>
+
+<script>
+(() => {
+  const API = 'https://fhfphlqrgtabkiqoywea.supabase.co/functions/v1/pb-crm-admin';
+  const CAMPOS = ['linkedin_impressoes','linkedin_posts','linkedin_seguidores','youtube_views','youtube_inscritos','youtube_inscritos_novos','youtube_horas','manychat_envios','manychat_cliques','manychat_novos_seguidores','eduzz_vendas','eduzz_receita'];
+  const $ = id => document.getElementById(id);
+  let senha = '', linhas = [], leads = [];
+
+  const isoLocal = d => [d.getFullYear(), String(d.getMonth()+1).padStart(2,'0'), String(d.getDate()).padStart(2,'0')].join('-');
+  const segunda = iso => { const [y,m,d] = iso.split('-').map(Number); const x = new Date(y, m-1, d); x.setDate(x.getDate() - ((x.getDay()+6)%7)); return isoLocal(x); };
+  const soma = (iso, n) => { const [y,m,d] = iso.split('-').map(Number); return isoLocal(new Date(y, m-1, d+n)); };
+  const num = v => (v === null || v === undefined || v === '' || isNaN(+v)) ? null : +v;
+  const fmt = (v, money) => v === null || v === undefined ? '—' : Number(v).toLocaleString('pt-BR', money ? {style:'currency', currency:'BRL'} : {maximumFractionDigits:1});
+  const br = iso => { const [y,m,d] = iso.split('-'); return d+'/'+m+'/'+y; };
+
+  function crmDaSemana(iso) {
+    const ini = new Date(iso + 'T00:00:00-03:00');
+    const fim = new Date(soma(iso, 7) + 'T00:00:00-03:00');
+    const del = leads.filter(l => { const t = new Date(l.created_at || l.criado_em || 0); return t >= ini && t < fim; });
+    return { leads: del.length, convertidos: del.filter(l => l.status === 'convertido').length };
+  }
+
+  function preencherForm(iso) {
+    const r = linhas.find(x => x.semana === iso) || {};
+    CAMPOS.forEach(c => { $('f_'+c).value = r[c] ?? ''; });
+    const crm = crmDaSemana(iso);
+    $('crm-auto').textContent = crm.leads + ' leads · ' + crm.convertidos + ' convertidos';
+  }
+
+  function desenhar() {
+    const sem = $('semana').value;
+    const ant = linhas.find(x => x.semana === soma(sem, -7));
+    const cur = linhas.find(x => x.semana === sem) || {};
+    const cards = [
+      ['LinkedIn impressões', 'linkedin_impressoes', false],
+      ['YouTube views', 'youtube_views', false],
+      ['ManyChat novos', 'manychat_novos_seguidores', false],
+      ['Eduzz receita', 'eduzz_receita', true],
+    ];
+    $('cards').innerHTML = cards.map(([lab, k, money]) => {
+      const c = num(cur[k]), p = ant ? num(ant[k]) : null;
+      let d = 'sem comparação', cls = '';
+      if (c !== null && p !== null && p !== 0) { const pct = (c-p)/Math.abs(p)*100; d = (pct>0?'▲ ':pct<0?'▼ ':'• ')+Math.abs(pct).toLocaleString('pt-BR',{maximumFractionDigits:1})+'% vs. semana anterior'; cls = pct>0?'up':pct<0?'down':''; }
+      return `<div class="card"><div class="l" style="font-size:11px;color:var(--fg3);text-transform:uppercase">${lab}</div><div class="v">${fmt(c, money)}</div><div class="d ${cls}">${d}</div></div>`;
+    }).join('');
+
+    const body = $('rows'); body.textContent = '';
+    $('vazio').hidden = linhas.length > 0;
+    linhas.forEach(r => {
+      const crm = crmDaSemana(r.semana);
+      const tr = document.createElement('tr');
+      if (r.semana === sem) tr.className = 'on';
+      const vals = [br(r.semana), fmt(r.linkedin_impressoes), fmt(r.linkedin_posts), fmt(r.linkedin_seguidores),
+        fmt(r.youtube_views), fmt(r.youtube_inscritos), fmt(r.youtube_inscritos_novos), fmt(r.youtube_horas),
+        fmt(r.manychat_envios), fmt(r.manychat_cliques), fmt(r.manychat_novos_seguidores),
+        fmt(r.eduzz_vendas), fmt(r.eduzz_receita, true), String(crm.leads), String(crm.convertidos)];
+      vals.forEach(v => { const td = document.createElement('td'); td.textContent = v; tr.appendChild(td); });
+      tr.addEventListener('click', () => { $('semana').value = r.semana; preencherForm(r.semana); desenhar(); });
+      body.appendChild(tr);
+    });
+  }
+
+  async function carregar() {
+    const h = { 'X-Admin-Password': senha };
+    try {
+      const [rm, rl] = await Promise.all([
+        fetch(API + '?action=metricas_list', { headers: h }),
+        fetch(API + '?action=list', { headers: h }),
+      ]);
+      if (rm.status === 401 || rl.status === 401) { location.href = 'admin.html'; return; }
+      const dm = await rm.json(); const dl = await rl.json();
+      linhas = dm.rows || [];
+      leads = dl.leads || [];
+    } catch (e) {
+      $('msg').textContent = 'Erro ao carregar. Recarregue a página.';
+    }
+    preencherForm($('semana').value);
+    desenhar();
+  }
+
+  async function salvar() {
+    const sem = $('semana').value;
+    if (!sem) { $('msg').textContent = 'Escolha uma data.'; return; }
+    const semana = segunda(sem);
+    const payload = { semana };
+    CAMPOS.forEach(c => { payload[c] = num($('f_'+c).value); });
+    const crm = crmDaSemana(semana);
+    payload.crm_leads = crm.leads; payload.crm_convertidos = crm.convertidos;
+    $('btn-salvar').disabled = true; $('msg').textContent = 'Salvando…';
+    try {
+      const r = await fetch(API + '?action=metricas_save', {
+        method: 'POST', headers: { 'X-Admin-Password': senha, 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const d = await r.json();
+      if (!r.ok || d.ok === false) throw new Error(d.error || 'erro');
+      $('semana').value = semana;
+      $('msg').textContent = 'Semana de ' + br(semana) + ' salva.';
+      await carregar();
+    } catch (e) {
+      $('msg').textContent = 'Não foi possível salvar: ' + e.message;
+    } finally { $('btn-salvar').disabled = false; }
+  }
+
+  $('semana').addEventListener('change', e => { if (e.target.value) { $('semana').value = segunda(e.target.value); preencherForm($('semana').value); desenhar(); } });
+  $('btn-hoje').addEventListener('click', () => { $('semana').value = segunda(isoLocal(new Date())); preencherForm($('semana').value); desenhar(); });
+  $('btn-salvar').addEventListener('click', salvar);
+
+  (function init(){
+    $('semana').value = segunda(isoLocal(new Date()));
+    try { senha = localStorage.getItem('crm_pw') || ''; } catch (_) {}
+    if (!senha) { location.href = 'admin.html'; return; }
+    carregar();
+  })();
+})();
+</script>
+</body>
+</html>
